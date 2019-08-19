@@ -28,5 +28,7 @@ async def dump(ctx):
     if not is_admin(author):
         ctx.send("Admin only feature")
         return
+    history = []
     async for message in channel.history(limit=MESSAGESLIMIT):
-        print(message)
+        history.insert(0, message)
+    # history is already in order, from 0 to number_of_messages
