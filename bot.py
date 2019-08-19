@@ -1,6 +1,7 @@
 from discord.ext import commands
 import discord
 import os
+import re
 
 prefix = "?"
 MESSAGESLIMIT = None
@@ -23,20 +24,20 @@ def is_admin(author: discord.Member):
 
 
 def isDayTopic(message: discord.Message):
-    return message.pinned and ("day " in message.content or "Day " in message.content)
+    return message.pinned and re.search(r"day \d:", message.content, re.MULTILINE | re.IGNORECASE)
 
 
 @bot.command()
 async def dump(ctx):
     author: discord.Member = ctx.author
     channel: discord.TextChannel = ctx.message.channel
+    fileName = "{}.md".format(channel.name)
 
     if author.bot:
         return
 
-    fileName = "{}.md".format(channel.name)
     if not is_admin(author):
-        ctx.send("Admin only feature")
+        await ctx.send("Admin only feature")
         return
 
     history = []
