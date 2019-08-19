@@ -8,10 +8,14 @@ TOKEN="Your bot token"
 ```
 
 ### Commands
-##### ?ping  
+> Prefix: `?`
+
+> ping  
+  
 It's a test command everyone can use. It simply returns the ping of the bot to test if it's running
 
-##### ?dump
+> dump
+
 Only admins can use this command. It will send a message after parsing all the messages with the .md file as attachment
 
 ##Attention
