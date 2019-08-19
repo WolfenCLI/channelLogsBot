@@ -18,6 +18,6 @@ It's a test command everyone can use. It simply returns the ping of the bot to t
 
 Only admins can use this command. It will send a message after parsing all the messages with the .md file as attachment
 
-##Attention
+## Attention
 This bot is not meant to run on more than 1 Discord server simultaneously but only to be quickly hosted, used and
 thrown away/put offline. I never tested it with multiple servers.
