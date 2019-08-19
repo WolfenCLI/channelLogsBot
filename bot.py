@@ -3,7 +3,7 @@ import discord
 import os
 
 prefix = "?"
-MESSAGESLIMIT = 1000
+MESSAGESLIMIT = None
 bot = commands.Bot(command_prefix=prefix)
 
 
@@ -22,35 +22,49 @@ def is_admin(author: discord.Member):
     return author.guild_permissions.administrator
 
 
+def isDayTopic(message: discord.Message):
+    return message.pinned and ("day " in message.content or "Day " in message.content)
+
+
 @bot.command()
 async def dump(ctx):
     author: discord.Member = ctx.author
     channel: discord.TextChannel = ctx.message.channel
+
+    if author.bot:
+        return
+
     fileName = "{}.md".format(channel.name)
     if not is_admin(author):
         ctx.send("Admin only feature")
         return
+
     history = []
     async for message in channel.history(limit=MESSAGESLIMIT):
         history.insert(0, message)
     # history is already in order, from 0 to number_of_messages
+
     f = open(fileName, "w+", encoding="utf-8")
     currPos = 0
     while currPos < (len(history) - 1):
-        currAuthor = history[currPos].author
+        currAuthor: discord.Member = history[currPos].author
 
         f.writelines(u"#### {}\n".format(currAuthor.name))
         for message in history[currPos:]:
             if message.content == "?dump":
                 currPos += 1
-                continue
-            if history[currPos].pinned and ("Day " in history[currPos].content) or ("day " in history[currPos].content):
-                f.writelines(u"# {}\n".format(history[currPos].content))
-                f.writelines(u"#### {}\n".format(currAuthor.name))
-                currPos += 1
-                continue
-            if message.author == currAuthor:
+            elif message.author == currAuthor:
+                if isDayTopic(message):
+                    f.writelines(u"# {}  \n".format(history[currPos].content))
+                    currPos += 1
+                    continue
+
                 f.writelines(message.content + "  \n")
+
+                if len(message.attachments) > 0:
+                    for attachment in message.attachments:
+                        f.writelines("- Attachment: {}  \n".format(attachment.url))
+
                 currPos += 1
             else:
                 break
