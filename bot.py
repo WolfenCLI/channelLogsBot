@@ -50,21 +50,21 @@ async def dump(ctx):
     while currPos < (len(history) - 1):
         currAuthor: discord.Member = history[currPos].author
 
-        f.writelines(u"#### {}\n".format(currAuthor.name))
+        f.writelines(u"#### {}\n\n".format(currAuthor.name))
         for message in history[currPos:]:
             if message.content == "?dump":
                 currPos += 1
             elif message.author == currAuthor:
                 if isDayTopic(message):
-                    f.writelines(u"# {}  \n".format(history[currPos].content))
+                    f.writelines(u"# {}  \n\n".format(history[currPos].content))
                     currPos += 1
                     continue
 
-                f.writelines(message.content + "  \n")
+                f.writelines(message.content + "  \n\n")
 
                 if len(message.attachments) > 0:
                     for attachment in message.attachments:
-                        f.writelines("- Attachment: {}  \n".format(attachment.url))
+                        f.writelines("- Attachment: {}  \n\n".format(attachment.url))
 
                 currPos += 1
             else:
