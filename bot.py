@@ -1,5 +1,6 @@
 from discord.ext import commands
 import discord
+import os
 
 prefix = "?"
 MESSAGESLIMIT = 1000
@@ -25,6 +26,7 @@ def is_admin(author: discord.Member):
 async def dump(ctx):
     author: discord.Member = ctx.author
     channel: discord.TextChannel = ctx.message.channel
+    fileName = "{}.md".format(channel.name)
     if not is_admin(author):
         ctx.send("Admin only feature")
         return
@@ -32,3 +34,26 @@ async def dump(ctx):
     async for message in channel.history(limit=MESSAGESLIMIT):
         history.insert(0, message)
     # history is already in order, from 0 to number_of_messages
+    f = open(fileName, "w+", encoding="utf-8")
+    currPos = 0
+    while currPos < (len(history) - 1):
+        currAuthor = history[currPos].author
+
+        f.writelines(u"#### {}\n".format(currAuthor.name))
+        for message in history[currPos:]:
+            if message.content == "?dump":
+                currPos += 1
+                continue
+            if history[currPos].pinned and ("Day " in history[currPos].content) or ("day " in history[currPos].content):
+                f.writelines(u"# {}\n".format(history[currPos].content))
+                f.writelines(u"#### {}\n".format(currAuthor.name))
+                currPos += 1
+                continue
+            if message.author == currAuthor:
+                f.writelines(message.content + "  \n")
+                currPos += 1
+            else:
+                break
+    f.close()
+    await ctx.send("Here's your dump", file=discord.File(fileName))
+    os.remove(fileName)
